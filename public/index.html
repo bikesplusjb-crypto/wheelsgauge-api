@@ -100,13 +100,31 @@
   .ss-val{color:#cfd3da;letter-spacing:.5px;}
   .ss-val.ok{color:#34d058;}
   .gauge-col{display:flex;flex-direction:column;gap:14px;justify-content:space-between;}
-  .gearbox{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:14px 16px 10px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
-  .gb-label{display:flex;justify-content:space-between;align-items:center;font-family:'Archivo',monospace;font-size:11px;letter-spacing:1px;color:#5a5f68;margin-bottom:8px;}
+
+  /* gearbox now a 2-part panel: shifter + live drive readout fills the gap */
+  .gearbox{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:14px 16px 12px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .gb-label{display:flex;justify-content:space-between;align-items:center;font-family:'Archivo',monospace;font-size:11px;letter-spacing:1px;color:#5a5f68;margin-bottom:10px;}
   .gb-gear{color:#ff7a18;font-family:'Anton',sans-serif;letter-spacing:1.5px;font-size:15px;}
-  .shifter svg{width:100%;max-width:360px;display:block;margin:0 auto;}
+  .gb-body{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;align-items:center;}
+  .shifter svg{width:100%;max-width:340px;display:block;margin:0 auto;}
   .gear-hit circle:hover{fill:rgba(255,106,0,.12);}
   .shift-stick{transition:transform .28s cubic-bezier(.34,1.4,.5,1);}
-  .gb-hint{text-align:center;font-family:'Archivo',sans-serif;font-size:11px;color:#5a5f68;margin:6px 0 0;}
+  .gb-hint{text-align:center;font-family:'Archivo',sans-serif;font-size:11px;color:#5a5f68;margin:8px 0 0;}
+
+  /* live drive readout — fills former empty space */
+  .drive{display:flex;flex-direction:column;gap:12px;border-left:1px solid #1c1f27;padding-left:18px;}
+  .drive-gear{display:flex;align-items:baseline;gap:10px;}
+  .drive-gear .dg-num{font-family:'Anton',sans-serif;font-size:54px;line-height:.8;color:var(--orange);text-shadow:0 0 22px rgba(255,106,0,.45);}
+  .drive-gear .dg-cap{font-family:'Anton',sans-serif;font-size:12px;letter-spacing:2px;color:#7a7f88;}
+  .rpm-wrap{}
+  .rpm-top{display:flex;justify-content:space-between;font-family:'Archivo',monospace;font-size:10px;letter-spacing:1px;color:#5a5f68;margin-bottom:5px;}
+  .rpm-bar{height:14px;border-radius:7px;background:#16181d;border:1px solid #23262d;overflow:hidden;position:relative;}
+  .rpm-fill{height:100%;width:0%;border-radius:7px;background:linear-gradient(90deg,#16a34a 0%,#facc15 55%,#ff7a18 80%,#e0242e 100%);transition:width .32s cubic-bezier(.34,1.2,.5,1);box-shadow:0 0 12px rgba(255,106,0,.4);}
+  .rpm-redline{position:absolute;top:0;bottom:0;right:14%;width:2px;background:rgba(224,36,36,.6);}
+  .drive-meta{display:flex;justify-content:space-between;font-family:'Archivo',monospace;font-size:11px;color:#7a7f88;}
+  .drive-meta b{color:#cfd3da;font-weight:600;}
+  @media(max-width:560px){.gb-body{grid-template-columns:1fr;}.drive{border-left:none;border-top:1px solid #1c1f27;padding-left:0;padding-top:14px;}}
+
   .mini-col{display:flex;flex-direction:column;gap:14px;}
   .minigauge{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:12px;text-align:center;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
   .minigauge svg{display:block;}
@@ -389,43 +407,60 @@
 
       <div class="gearbox">
         <div class="gb-label"><span>6-SPEED · DROP THE HAMMER</span><span class="gb-gear" id="gearTick">NEUTRAL</span></div>
-        <div class="shifter">
-          <svg viewBox="0 0 360 132" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="shPlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23262d"/><stop offset="1" stop-color="#121419"/></linearGradient>
-              <radialGradient id="shBall" cx="0.4" cy="0.32" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="0.3" stop-color="#e0e3e8"/><stop offset="0.7" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></radialGradient>
-              <linearGradient id="shStick" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#54585f"/><stop offset="0.5" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></linearGradient>
-            </defs>
-            <rect x="2" y="6" width="356" height="120" rx="14" fill="url(#shPlate)" stroke="#3a3f49" stroke-width="1.5"/>
-            <!-- gate channels: 3 columns (left=1/2, mid=3/4, right=5/6) + center spine -->
-            <g stroke="#0a0b0e" stroke-width="22" stroke-linecap="round" fill="none">
-              <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
-            </g>
-            <g stroke="#16181d" stroke-width="13" stroke-linecap="round" fill="none">
-              <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
-            </g>
-            <!-- clickable hit zones for each gear -->
-            <g class="gear-hit" fill="transparent" style="cursor:pointer">
-              <circle data-gear="1" cx="120" cy="34" r="20"/>
-              <circle data-gear="2" cx="120" cy="98" r="20"/>
-              <circle data-gear="3" cx="180" cy="34" r="20"/>
-              <circle data-gear="4" cx="180" cy="98" r="20"/>
-              <circle data-gear="5" cx="240" cy="34" r="20"/>
-              <circle data-gear="6" cx="240" cy="98" r="20"/>
-              <circle data-gear="0" cx="180" cy="66" r="16"/>
-            </g>
-            <g font-family="Anton, sans-serif" font-size="15" fill="#9aa0a8" text-anchor="middle" pointer-events="none">
-              <text x="120" y="28">1</text><text x="120" y="118">2</text>
-              <text x="180" y="28">3</text><text x="180" y="120">4</text>
-              <text x="240" y="28">5</text><text x="240" y="118">6</text>
-            </g>
-            <text x="180" y="66" font-family="Anton" font-size="11" fill="#ff7a18" text-anchor="middle" dominant-baseline="middle" pointer-events="none">N</text>
-            <g class="shift-stick" id="shiftStick" pointer-events="none">
-              <line class="shift-rod" id="shiftRod" x1="180" y1="66" x2="180" y2="66" stroke="url(#shStick)" stroke-width="12" stroke-linecap="round"/>
-              <circle class="shift-ball" id="shiftBall" cx="180" cy="66" r="21" fill="url(#shBall)" stroke="#1b1d22" stroke-width="1.5"/>
-              <ellipse class="shift-glint" id="shiftGlint" cx="172" cy="58" rx="7" ry="4" fill="#fff" opacity="0.5"/>
-            </g>
-          </svg>
+        <div class="gb-body">
+          <div class="shifter">
+            <svg viewBox="0 0 360 132" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="shPlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23262d"/><stop offset="1" stop-color="#121419"/></linearGradient>
+                <radialGradient id="shBall" cx="0.4" cy="0.32" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="0.3" stop-color="#e0e3e8"/><stop offset="0.7" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></radialGradient>
+                <linearGradient id="shStick" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#54585f"/><stop offset="0.5" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></linearGradient>
+              </defs>
+              <rect x="2" y="6" width="356" height="120" rx="14" fill="url(#shPlate)" stroke="#3a3f49" stroke-width="1.5"/>
+              <!-- gate channels: 3 columns (left=1/2, mid=3/4, right=5/6) + center spine -->
+              <g stroke="#0a0b0e" stroke-width="22" stroke-linecap="round" fill="none">
+                <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
+              </g>
+              <g stroke="#16181d" stroke-width="13" stroke-linecap="round" fill="none">
+                <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
+              </g>
+              <!-- clickable hit zones for each gear -->
+              <g class="gear-hit" fill="transparent" style="cursor:pointer">
+                <circle data-gear="1" cx="120" cy="34" r="20"/>
+                <circle data-gear="2" cx="120" cy="98" r="20"/>
+                <circle data-gear="3" cx="180" cy="34" r="20"/>
+                <circle data-gear="4" cx="180" cy="98" r="20"/>
+                <circle data-gear="5" cx="240" cy="34" r="20"/>
+                <circle data-gear="6" cx="240" cy="98" r="20"/>
+                <circle data-gear="0" cx="180" cy="66" r="16"/>
+              </g>
+              <g font-family="Anton, sans-serif" font-size="15" fill="#9aa0a8" text-anchor="middle" pointer-events="none">
+                <text x="120" y="28">1</text><text x="120" y="118">2</text>
+                <text x="180" y="28">3</text><text x="180" y="120">4</text>
+                <text x="240" y="28">5</text><text x="240" y="118">6</text>
+              </g>
+              <text x="180" y="66" font-family="Anton" font-size="11" fill="#ff7a18" text-anchor="middle" dominant-baseline="middle" pointer-events="none">N</text>
+              <g class="shift-stick" id="shiftStick" pointer-events="none">
+                <line class="shift-rod" id="shiftRod" x1="180" y1="66" x2="180" y2="66" stroke="url(#shStick)" stroke-width="12" stroke-linecap="round"/>
+                <circle class="shift-ball" id="shiftBall" cx="180" cy="66" r="21" fill="url(#shBall)" stroke="#1b1d22" stroke-width="1.5"/>
+                <ellipse class="shift-glint" id="shiftGlint" cx="172" cy="58" rx="7" ry="4" fill="#fff" opacity="0.5"/>
+              </g>
+            </svg>
+          </div>
+
+          <div class="drive">
+            <div class="drive-gear">
+              <span class="dg-num" id="driveGearNum">N</span>
+              <span class="dg-cap">CURRENT<br>GEAR</span>
+            </div>
+            <div class="rpm-wrap">
+              <div class="rpm-top"><span>RPM</span><span id="rpmText">IDLE</span></div>
+              <div class="rpm-bar"><div class="rpm-fill" id="rpmFill"></div><span class="rpm-redline"></span></div>
+            </div>
+            <div class="drive-meta">
+              <span>WHEEL SPIN <b id="spinText">0 rpm</b></span>
+              <span>REDLINE <b style="color:#ff5b5b">6th</b></span>
+            </div>
+          </div>
         </div>
         <p class="gb-hint">Click a gear to rev the wheels ↑</p>
       </div>
@@ -776,16 +811,21 @@
     const ball = document.getElementById('shiftBall');
     const glint = document.getElementById('shiftGlint');
     const gearLabel = document.getElementById('gearTick');
+    // drive-readout elements (fills the former empty space)
+    const dgNum = document.getElementById('driveGearNum');
+    const rpmFill = document.getElementById('rpmFill');
+    const rpmText = document.getElementById('rpmText');
+    const spinText = document.getElementById('spinText');
     if(!stick) return;
-    // gate coordinates per gear (ball target in SVG units)
+    // gate coordinates per gear (ball target in SVG units) + readout values
     const pos = {
-      0:{x:180,y:66, name:'NEUTRAL', speed:'0s'},   // neutral = stopped
-      1:{x:120,y:34, name:'GEAR 1', speed:'3.2s'},
-      2:{x:120,y:98, name:'GEAR 2', speed:'2.4s'},
-      3:{x:180,y:34, name:'GEAR 3', speed:'1.7s'},
-      4:{x:180,y:98, name:'GEAR 4', speed:'1.2s'},
-      5:{x:240,y:34, name:'GEAR 5', speed:'0.8s'},
-      6:{x:240,y:98, name:'GEAR 6', speed:'0.45s'}
+      0:{x:180,y:66, name:'NEUTRAL', speed:'0s',    num:'N', rpm:6,  rpmTxt:'IDLE',     spin:'0 rpm'},
+      1:{x:120,y:34, name:'GEAR 1',  speed:'3.2s',  num:'1', rpm:24, rpmTxt:'1,800',    spin:'310 rpm'},
+      2:{x:120,y:98, name:'GEAR 2',  speed:'2.4s',  num:'2', rpm:38, rpmTxt:'2,600',    spin:'420 rpm'},
+      3:{x:180,y:34, name:'GEAR 3',  speed:'1.7s',  num:'3', rpm:52, rpmTxt:'3,500',    spin:'590 rpm'},
+      4:{x:180,y:98, name:'GEAR 4',  speed:'1.2s',  num:'4', rpm:66, rpmTxt:'4,600',    spin:'840 rpm'},
+      5:{x:240,y:34, name:'GEAR 5',  speed:'0.8s',  num:'5', rpm:80, rpmTxt:'5,800',    spin:'1,250 rpm'},
+      6:{x:240,y:98, name:'GEAR 6',  speed:'0.45s', num:'6', rpm:96, rpmTxt:'7,200',    spin:'2,200 rpm'}
     };
     const wheels = document.querySelectorAll('.wheelO');
     function setGear(g){
@@ -795,6 +835,11 @@
       ball.setAttribute('cx', p.x); ball.setAttribute('cy', p.y);
       glint.setAttribute('cx', p.x-8); glint.setAttribute('cy', p.y-8);
       gearLabel.textContent = p.name;
+      // update the live drive readout
+      if(dgNum) dgNum.textContent = p.num;
+      if(rpmFill) rpmFill.style.width = p.rpm + '%';
+      if(rpmText) rpmText.textContent = p.rpmTxt;
+      if(spinText) spinText.textContent = p.spin;
       // drive wheels
       wheels.forEach(w => {
         if(p.speed === '0s'){ w.style.animationPlayState='paused'; }
