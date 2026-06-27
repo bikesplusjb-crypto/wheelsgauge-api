@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HotWheelsGauge — Redlines, Treasure Hunts & What They're Worth</title>
+<meta name="description" content="Look up any Hot Wheels and see live market value. Deep guides on vintage Redlines, Treasure Hunts, Super Treasure Hunts, and how to identify them." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Anton&family=Archivo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#08090c; --asphalt:#15171d; --steel:#262932;
+    --orange:#ff6a00; --orange-2:#ff8c2b; --flame:#ffb000;
+    --blue:#1ea7ff; --purple:#9d4edd; --pink:#ff3d8b; --lime:#9ef01a; --teal:#00e0c6;
+    --chrome:#f0f1f5; --cream:#f4efe4; --muted:#8b8a94; --redline:#e02424;
+    --glow:rgba(255,106,0,.5);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Archivo',-apple-system,sans-serif;background:var(--black);color:var(--chrome);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  .race{font-family:'Racing Sans One',cursive;}
+  .anton{font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:.5px;}
+
+  header{background:var(--black);border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:60;}
+  .nav{max-width:1150px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .logo{font-family:'Racing Sans One',cursive;font-size:30px;color:var(--chrome);line-height:1;letter-spacing:.5px;}
+  .logo b{color:var(--orange);}
+  .nav-links{display:flex;gap:20px;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;}
+  .nav-links a{color:var(--muted);text-decoration:none;transition:.15s;}
+  .nav-links a:hover{color:var(--orange);}
+  @media(max-width:760px){.nav-links{display:none;}}
+
+  /* ── HERO with animated track ── */
+  .hero{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#1b1e26 0%,#0d0f14 55%,#08090c 100%);padding:54px 20px 8px;}
+  .hero-inner{max-width:1150px;margin:0 auto;position:relative;z-index:3;}
+  .gauge-flames{position:absolute;left:0;right:0;bottom:-6%;height:78%;z-index:0;pointer-events:none;opacity:.55;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 100%);}
+  .gauge-flames svg{width:100%;height:100%;}
+  .gauge-flames .fl{transform-origin:center bottom;}
+  .gauge-flames .f1{animation:hflick1 .42s ease-in-out infinite alternate;}
+  .gauge-flames .f2{animation:hflick2 .55s ease-in-out infinite alternate;}
+  .gauge-flames .f3{animation:hflick3 .48s ease-in-out infinite alternate;}
+  .gauge-flames .f2{animation-delay:-.13s;} .gauge-flames .f3{animation-delay:-.26s;}
+  @keyframes hflick1{0%{transform:scaleY(1) scaleX(1) translateY(0);}100%{transform:scaleY(1.14) scaleX(.94) translateY(-6px);}}
+  @keyframes hflick2{0%{transform:scaleY(.95) scaleX(1.04);}100%{transform:scaleY(1.18) scaleX(.92) translateY(-8px);}}
+  @keyframes hflick3{0%{transform:scaleY(1.05) scaleX(.97);}100%{transform:scaleY(.9) scaleX(1.05) translateY(-3px);}}
+  .hero-head .hl1,.hero-head .hl2,.hero-head .hl3{position:relative;z-index:2;}
+  .hero-head .hl1{text-shadow:0 2px 0 #000,0 2px 18px rgba(0,0,0,.85);}
+  .hero-head .hl3{text-shadow:0 2px 0 #000,0 2px 18px rgba(0,0,0,.85);}
+  .hero .kicker{position:relative;z-index:2;}
+  .kicker{font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:5px;color:var(--orange);text-transform:uppercase;margin-bottom:10px;}
+  .hero-head{margin:0;}
+  .hero-head .hl1,.hero-head .hl3{display:flex;align-items:center;font-family:'Anton',sans-serif;font-size:clamp(40px,7.4vw,80px);line-height:.84;color:var(--chrome);text-shadow:0 2px 0 #000;letter-spacing:1px;}
+  .hero-head .hl2{display:flex;align-items:center;line-height:.82;margin:2px 0;}
+  .hero-head .hw{font-family:'Anton',sans-serif;font-size:clamp(52px,10vw,108px);color:var(--orange);letter-spacing:1px;text-shadow:0 0 42px rgba(255,106,0,.5);display:inline-flex;align-items:center;}
+  .hero-head .hgap{display:inline-block;width:clamp(14px,2.6vw,30px);}
+  .wheelO{width:clamp(48px,9vw,96px);height:clamp(48px,9vw,96px);vertical-align:middle;margin:0 1px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));animation:spinwheel var(--wheel-speed,6s) linear infinite;}
+  .wheelO.sm{width:clamp(30px,5.6vw,60px);height:clamp(30px,5.6vw,60px);margin:0 2px;}
+  @keyframes spinwheel{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+  .hero .sub{font-size:20px;max-width:560px;margin:18px 0 4px;color:#d6d2c6;position:relative;z-index:2;text-shadow:0 1px 10px rgba(8,9,12,.95),0 0 4px rgba(8,9,12,.9);}
+
+  .gauge-needle{transform-origin:170px 158px;animation:gSweep 5s cubic-bezier(.5,0,.2,1) infinite;}
+  @keyframes gSweep{
+    0%{transform:rotate(-120deg);}
+    18%{transform:rotate(10deg);}
+    26%{transform:rotate(-2deg);}
+    34%{transform:rotate(16deg);}
+    60%{transform:rotate(16deg);}
+    74%{transform:rotate(-60deg);}
+    88%{transform:rotate(-48deg);}
+    100%{transform:rotate(-120deg);}
+  }
+  .gauge-needle-2{transform-origin:170px 158px;animation:vSweep 5.4s cubic-bezier(.5,0,.2,1) infinite;}
+  @keyframes vSweep{
+    0%{transform:rotate(-120deg);}
+    20%{transform:rotate(-30deg);}
+    30%{transform:rotate(-42deg);}
+    38%{transform:rotate(-24deg);}
+    62%{transform:rotate(-24deg);}
+    76%{transform:rotate(-80deg);}
+    100%{transform:rotate(-120deg);}
+  }
+
+  /* ===== Car dashboard ===== */
+  .tool{max-width:1150px;margin:8px auto 0;padding:0 20px 50px;position:relative;z-index:5;}
+  .dash{position:relative;background:linear-gradient(180deg,#1c1f26 0%,#13151b 60%,#0d0e13 100%);border:2px solid #2a2e37;border-radius:24px;padding:24px 24px 28px;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.04),0 0 50px rgba(255,106,0,.06);}
+  .dash::before{content:"";position:absolute;inset:0;border-radius:24px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0 2px,transparent 2px 4px);pointer-events:none;}
+  .dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap;position:relative;}
+  .dbadge{display:flex;align-items:center;gap:10px;font-family:'Anton',sans-serif;letter-spacing:2px;color:#cfd3da;font-size:15px;}
+  .dbadge .ddot{width:10px;height:10px;border-radius:50%;background:#34d058;box-shadow:0 0 10px #34d058;animation:dpulse 1.8s infinite;}
+  .dbadge .dgo{color:var(--orange);}
+  @keyframes dpulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .dash-id{font-family:'Archivo',monospace;color:#5a5f68;font-size:12px;letter-spacing:1px;}
+  .cluster{display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch;}
+  .twin-gauges{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;}
+  .switches{display:flex;flex-direction:column;}
+  .sys-status{margin-top:auto;padding-top:16px;border-top:1px solid #1f222a;}
+  .ss-row{display:flex;align-items:center;justify-content:space-between;font-family:'Archivo',monospace;font-size:12px;padding:5px 0;}
+  .ss-lbl{color:#7a7f88;}
+  .ss-val{color:#cfd3da;letter-spacing:.5px;}
+  .ss-val.ok{color:#34d058;}
+  .gauge-col{display:flex;flex-direction:column;gap:14px;justify-content:space-between;}
+  .gearbox{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:14px 16px 10px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .gb-label{display:flex;justify-content:space-between;align-items:center;font-family:'Archivo',monospace;font-size:11px;letter-spacing:1px;color:#5a5f68;margin-bottom:8px;}
+  .gb-gear{color:#ff7a18;font-family:'Anton',sans-serif;letter-spacing:1.5px;font-size:15px;}
+  .shifter svg{width:100%;max-width:360px;display:block;margin:0 auto;}
+  .gear-hit circle:hover{fill:rgba(255,106,0,.12);}
+  .shift-stick{transition:transform .28s cubic-bezier(.34,1.4,.5,1);}
+  .gb-hint{text-align:center;font-family:'Archivo',sans-serif;font-size:11px;color:#5a5f68;margin:6px 0 0;}
+  .mini-col{display:flex;flex-direction:column;gap:14px;}
+  .minigauge{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:12px;text-align:center;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .minigauge svg{display:block;}
+  .mg-lbl{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:1.5px;color:#7a7f88;margin-top:4px;}
+  .mg-val{font-family:'Anton',sans-serif;font-size:19px;color:var(--orange);letter-spacing:1px;}
+  .center-gauge{display:flex;justify-content:center;}
+  .center-gauge svg{width:100%;max-width:340px;filter:drop-shadow(0 14px 26px rgba(0,0,0,.5));}
+  .switches{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:16px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .switches h4{font-family:'Anton',sans-serif;font-size:13px;letter-spacing:1.5px;color:#7a7f88;margin:0 0 14px;text-transform:uppercase;}
+  .swrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+  .swrow:last-child{margin-bottom:0;}
+  .swlabel{font-size:13px;color:#cfcabd;font-weight:600;font-family:'Archivo',sans-serif;}
+  .swlabel small{display:block;color:#5a5f68;font-size:11px;font-weight:400;}
+  .toggle{width:48px;height:26px;border-radius:14px;background:#23262d;border:1px solid #34373f;position:relative;cursor:pointer;transition:.2s;flex-shrink:0;}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:linear-gradient(180deg,#fff,#c9cdd4);transition:.2s;box-shadow:0 2px 4px rgba(0,0,0,.4);}
+  .toggle.on{background:linear-gradient(180deg,#ff8a2b,#ff6a00);border-color:#ff6a00;box-shadow:0 0 14px rgba(255,106,0,.5);}
+  .toggle.on .knob{left:24px;}
+  .toggle.soon{opacity:.45;cursor:not-allowed;}
+  .tag-soon{font-family:'Archivo',monospace;font-size:9px;color:#ff6a00;border:1px solid #ff6a00;border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;letter-spacing:.5px;}
+  .readout-label{font-family:'Archivo',monospace;font-size:12px;color:#5a5f68;letter-spacing:1px;margin:22px 0 8px;position:relative;}
+  .searchrow{display:flex;gap:14px;flex-wrap:wrap;position:relative;}
+  .searchrow input{flex:1;min-width:240px;background:#0b0c10;border:2px solid var(--steel);border-radius:11px;padding:20px 22px;font-size:19px;color:var(--chrome);font-family:'Archivo',sans-serif;font-weight:600;transition:.12s;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .searchrow input::placeholder{color:#6c6c74;}
+  .searchrow input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,106,0,.16);}
+  .btn{background:linear-gradient(180deg,#ff8a2b,#ff6a00);color:#1a0c00;font-family:'Anton',sans-serif;letter-spacing:1.5px;font-size:23px;padding:20px 42px;border:none;border-radius:11px;cursor:pointer;transition:.12s;text-transform:uppercase;box-shadow:0 8px 20px rgba(255,106,0,.35);}
+  .btn:hover{background:var(--flame);transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,106,0,.5);}
+  .hint{font-size:14px;color:var(--muted);margin-top:14px;text-align:center;position:relative;}
+  .hint b{color:var(--orange);}
+  @media(max-width:820px){.cluster{grid-template-columns:1fr;}.mini-col{flex-direction:row;}.minigauge{flex:1;}}
+
+  /* readouts row */
+  .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;position:relative;}
+  .ro-panel{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:14px 16px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
+  .ro-head{display:flex;align-items:center;gap:8px;font-family:'Anton',sans-serif;font-size:12px;letter-spacing:1.5px;color:#7a7f88;text-transform:uppercase;margin-bottom:12px;}
+  .ro-dot{width:8px;height:8px;border-radius:50%;background:#3a3f49;}
+  .ro-dot.live{background:#34d058;box-shadow:0 0 8px #34d058;animation:dpulse 1.8s infinite;}
+  .ticker{height:118px;overflow:hidden;position:relative;}
+  .ticker > div{will-change:transform;}
+  .tick-row,.mv-row,.st-row{display:flex;align-items:center;justify-content:space-between;font-family:'Archivo',sans-serif;font-size:13px;padding:6px 0;border-bottom:1px solid #1a1c22;}
+  .tk-name,.mv-name,.st-lbl{color:#cfcabd;}
+  .tk-price,.st-val{font-family:'Anton',sans-serif;letter-spacing:.5px;color:#cfd3da;}
+  .tk-price.up,.mv-chg.up{color:#34d058;}
+  .mv-chg.down{color:#ff5b5b;}
+  .st-val.o{color:var(--orange);}
+  .mv-rank{width:18px;height:18px;border-radius:4px;background:#1a1c22;color:#ff7a18;font-family:'Anton',sans-serif;font-size:11px;display:inline-flex;align-items:center;justify-content:center;margin-right:8px;}
+  .mv-name{flex:1;text-align:left;}
+  @media(max-width:820px){.readouts{grid-template-columns:1fr;}}
+
+  .spinner{width:34px;height:34px;border:4px solid var(--steel);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto;display:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .result{margin-top:22px;display:none;}
+  .rcard{background:#0e0f13;border:2px solid var(--steel);border-radius:12px;overflow:hidden;}
+  .rhead{background:var(--steel);padding:16px 20px;display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--orange);}
+  .rhead .name{font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;flex:1;line-height:1.05;}
+  .rhead .sub{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .rbody{padding:20px;}
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin-bottom:14px;}
+  .pcell{background:var(--asphalt);border:1px solid var(--steel);border-radius:8px;padding:14px 8px;}
+  .pcell .lbl{font-family:'Anton',sans-serif;font-size:11px;letter-spacing:1px;color:var(--muted);}
+  .pcell .val{font-family:'Racing Sans One',cursive;font-size:26px;margin-top:4px;color:var(--chrome);}
+  .pcell .val.o{color:var(--orange);}
+  .source-note{font-size:13px;color:var(--muted);text-align:center;margin-bottom:14px;}
+  .comp-btns{display:flex;gap:10px;flex-wrap:wrap;}
+  .comp-btns a{flex:1;min-width:140px;text-align:center;text-decoration:none;font-family:'Anton',sans-serif;letter-spacing:1px;font-size:15px;padding:13px;border-radius:8px;text-transform:uppercase;transition:.1s;}
+  .comp-btns a.sold{background:var(--orange);color:#1a0c00;}
+  .comp-btns a.sold:hover{background:var(--flame);}
+  .comp-btns a.active{background:transparent;border:2px solid var(--steel);color:var(--chrome);}
+  .listings{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+  .listing{background:var(--asphalt);border:1px solid var(--steel);border-radius:8px;overflow:hidden;text-decoration:none;color:var(--chrome);font-size:13px;}
+  .listing img{width:100%;height:120px;object-fit:cover;background:#000;}
+  .listing .p{padding:8px;}
+  .listing .lp{font-family:'Racing Sans One',cursive;color:var(--orange);font-size:16px;}
+
+  /* section shell */
+  section.block{max-width:1150px;margin:0 auto;padding:56px 20px;}
+  .block h2{font-family:'Racing Sans One',cursive;font-size:clamp(28px,5vw,46px);color:var(--chrome);line-height:1;margin-bottom:8px;}
+  .block h2 em{font-style:normal;color:var(--orange);}
+  .block .lead{font-size:18px;color:#cfcabd;max-width:720px;margin-bottom:28px;}
+  .divider{height:3px;background:linear-gradient(90deg,var(--orange),transparent);margin:0 0 28px;}
+  .divider.red{background:linear-gradient(90deg,var(--redline),transparent);}
+  .divider.lime{background:linear-gradient(90deg,var(--lime),transparent);}
+  .divider.blue{background:linear-gradient(90deg,var(--blue),transparent);}
+  .divider.purple{background:linear-gradient(90deg,var(--purple),transparent);}
+
+  /* hot board */
+  .hot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+  .hot-card{background:var(--asphalt);border:2px solid var(--steel);border-radius:12px;padding:14px;display:flex;gap:12px;transition:.12s;}
+  .hot-card:hover{border-color:var(--orange);transform:translateY(-2px);}
+  .hot-card img{width:64px;height:64px;object-fit:cover;border-radius:6px;background:#000;flex-shrink:0;}
+  .hot-card .info{flex:1;min-width:0;}
+  .hot-card .nm{font-family:'Anton',sans-serif;font-size:15px;text-transform:uppercase;line-height:1.05;}
+  .hot-card .rng{font-size:14px;margin-top:4px;}
+  .hot-card .rng b{color:var(--orange);}
+  .hot-card .cnt{font-size:12px;color:var(--muted);margin-top:2px;}
+  .hot-card .links{margin-top:8px;display:flex;gap:10px;}
+  .hot-card .links a{font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.5px;text-decoration:none;text-transform:uppercase;}
+  .hot-card .links a.sold{color:var(--orange);}
+  .hot-card .links a.act{color:var(--muted);}
+
+  /* info cards */
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
+  .info-card{background:var(--asphalt);border:2px solid var(--steel);border-radius:12px;padding:24px;border-top:5px solid var(--orange);transition:.15s;}
+  .info-card:hover{border-color:var(--steel);}
+  .info-card.a-red{border-top-color:var(--redline);}
+  .info-card.a-blue{border-top-color:var(--blue);}
+  .info-card.a-purple{border-top-color:var(--purple);}
+  .info-card.a-pink{border-top-color:var(--pink);}
+  .info-card.a-lime{border-top-color:var(--lime);}
+  .info-card.a-teal{border-top-color:var(--teal);}
+  .info-card h3{font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;color:var(--chrome);margin-bottom:10px;letter-spacing:.5px;}
+  .info-card p{font-size:15px;color:#cfcabd;margin-bottom:10px;}
+  .info-card ul{margin:10px 0 0 18px;}
+  .info-card li{font-size:15px;color:#cfcabd;margin-bottom:7px;}
+  .info-card .tag{display:inline-block;background:var(--redline);color:#fff;font-family:'Anton',sans-serif;font-size:11px;letter-spacing:1px;padding:3px 9px;border-radius:4px;text-transform:uppercase;margin-bottom:12px;}
+  .info-card .tag.th{background:var(--lime);color:#11260a;}
+  .info-card .tag.sth{background:var(--purple);color:#fff;}
+  .info-card .tag.blue{background:var(--blue);color:#04263b;}
+  .info-card .tag.pink{background:var(--pink);color:#3b0a1f;}
+  .info-card .cta-mini{display:inline-block;margin-top:14px;color:var(--orange);font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.5px;text-decoration:none;text-transform:uppercase;}
+
+  /* identify steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s;}
+  .step{background:var(--asphalt);border:2px solid var(--steel);border-radius:12px;padding:20px;position:relative;}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:18px;width:34px;height:34px;color:#08090c;font-family:'Anton',sans-serif;font-size:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+  .step:nth-child(1)::before{background:var(--orange);}
+  .step:nth-child(2)::before{background:var(--blue);}
+  .step:nth-child(3)::before{background:var(--lime);}
+  .step:nth-child(4)::before{background:var(--pink);}
+  .step:nth-child(5)::before{background:var(--purple);color:#fff;}
+  .step:nth-child(6)::before{background:var(--teal);}
+  .step h4{font-family:'Anton',sans-serif;font-size:17px;text-transform:uppercase;color:var(--chrome);margin:8px 0 8px;}
+  .step p{font-size:14px;color:#cfcabd;}
+
+  /* family strip */
+  .family-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .fam{background:var(--asphalt);border:2px solid var(--steel);border-radius:12px;padding:20px;display:flex;flex-direction:column;}
+  .fam .fn{font-family:'Racing Sans One',cursive;font-size:22px;color:var(--chrome);}
+  .fam .fn b{color:var(--orange);} .fam .fn .b2{color:#3a9bdc;} .fam .fn .b3{color:#e0a92e;}
+  .fam p{font-size:14px;color:#cfcabd;margin:8px 0 16px;flex:1;}
+  .fam a{text-align:center;text-decoration:none;font-family:'Anton',sans-serif;letter-spacing:1px;font-size:14px;padding:11px;border-radius:8px;background:var(--orange);color:#1a0c00;text-transform:uppercase;}
+  @media(max-width:680px){.family-grid{grid-template-columns:1fr;}}
+
+  footer{border-top:2px solid var(--steel);padding:28px 20px 60px;text-align:center;font-size:13px;color:var(--muted);max-width:1150px;margin:40px auto 0;}
+  footer a{color:var(--chrome);}
+
+  /* LIVE badge */
+  .live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(224,36,36,.15);border:1px solid var(--redline);color:#ff6b6b;font-family:'Anton',sans-serif;font-size:13px;letter-spacing:2px;padding:5px 12px;border-radius:6px;}
+  .live-dot{width:9px;height:9px;border-radius:50%;background:#ff3b3b;box-shadow:0 0 0 0 rgba(255,59,59,.6);animation:livePulse 1.6s infinite;}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(255,59,59,.6);}70%{box-shadow:0 0 0 10px rgba(255,59,59,0);}100%{box-shadow:0 0 0 0 rgba(255,59,59,0);}}
+
+  /* Mattel new-drops slot */
+  .mattel{background:linear-gradient(135deg,#1a1d24,#101218);border:2px solid var(--steel);border-radius:16px;padding:30px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+  .mattel .mtext{flex:1;min-width:260px;}
+  .mattel h3{font-family:'Racing Sans One',cursive;font-size:28px;color:var(--chrome);margin-bottom:8px;}
+  .mattel h3 em{font-style:normal;color:var(--orange);}
+  .mattel p{font-size:16px;color:#d6d2c6;margin-bottom:6px;}
+  .mattel .tagline{font-size:13px;color:var(--muted);}
+  .mattel a.mbtn{flex-shrink:0;background:var(--orange);color:#1a0c00;font-family:'Anton',sans-serif;letter-spacing:1px;font-size:17px;padding:16px 34px;border-radius:10px;text-decoration:none;text-transform:uppercase;transition:.1s;}
+  .mattel a.mbtn:hover{background:var(--flame);}
+  .mattel a.mbtn.soon{background:var(--steel);color:var(--muted);pointer-events:none;}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="logo">HOTWHEELS<b>GAUGE</b></div>
+    <nav class="nav-links">
+      <a href="#hot">Hot Now</a>
+      <a href="#redlines">Redlines</a>
+      <a href="#treasure">Treasure Hunts</a>
+      <a href="#identify">Identify</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="kicker">Vintage Redline Market Intel</div>
+    <h1 class="hero-head">
+      <span class="hl1">WHAT'S YOUR</span>
+      <span class="hl2"><span class="hw">H</span><svg class="wheelO" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg><span class="hw">T</span><span class="hgap"></span><span class="hw">WHEELS</span></span>
+      <span class="hl3">W<svg class="wheelO sm" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg>RTH?</span>
+    </h1>
+    <p class="sub">Look up any casting and see the live market — built for vintage Redlines, Treasure Hunts, and Super Treasure Hunts.</p>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <radialGradient id="hwTire" cx="0.5" cy="0.42" r="0.62"><stop offset="0.5" stop-color="#1a1c22"/><stop offset="0.86" stop-color="#0a0b0e"/><stop offset="1" stop-color="#000"/></radialGradient>
+      <radialGradient id="hwHub" cx="0.42" cy="0.36" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="0.4" stop-color="#c9cdd4"/><stop offset="0.75" stop-color="#80858d"/><stop offset="1" stop-color="#4a4e55"/></radialGradient>
+      <radialGradient id="hwDish" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#9aa0a8"/><stop offset="1" stop-color="#3d4147"/></radialGradient>
+      <g id="hwWheel">
+        <circle cx="48" cy="48" r="47" fill="url(#hwTire)"/>
+        <circle cx="48" cy="48" r="45.5" fill="none" stroke="#e0242e" stroke-width="3.2"/>
+        <circle cx="48" cy="48" r="41" fill="none" stroke="#e0242e" stroke-width="2.4"/>
+        <circle cx="48" cy="48" r="33" fill="url(#hwDish)"/>
+        <circle cx="48" cy="48" r="31" fill="url(#hwHub)"/>
+        <g fill="#16181d" transform="translate(48,48)">
+          <g id="hwHole"><path d="M0,-9 Q9,-12 14,-22 Q6,-27 -6,-27 Q-2,-16 0,-9 Z"/></g>
+          <use href="#hwHole" transform="rotate(72)"/><use href="#hwHole" transform="rotate(144)"/><use href="#hwHole" transform="rotate(216)"/><use href="#hwHole" transform="rotate(288)"/>
+        </g>
+        <circle cx="48" cy="48" r="8.5" fill="url(#hwHub)" stroke="#16181d" stroke-width="2"/>
+        <circle cx="48" cy="48" r="2.6" fill="#16181d"/>
+        <ellipse cx="39" cy="35" rx="11" ry="6" fill="#fff" opacity="0.28"/>
+      </g>
+    </defs></svg>
+  </div>
+</section>
+
+<div class="tool">
+  <div class="dash">
+    <div class="dash-top">
+      <div class="dbadge"><span class="ddot"></span>HOTWHEELS<span class="dgo">GAUGE</span> · MARKET DASH</div>
+      <div class="dash-id">SYS.v1 // LIVE FEED</div>
+    </div>
+
+    <div class="cluster">
+      <div class="gauge-col">
+      <div class="twin-gauges">
+        <div class="center-gauge">
+          <svg viewBox="0 0 340 232" width="100%">
+            <defs>
+              <radialGradient id="gDial" cx="0.5" cy="0.42" r="0.7"><stop offset="0" stop-color="#23262e"/><stop offset="0.7" stop-color="#15171c"/><stop offset="1" stop-color="#0c0d11"/></radialGradient>
+              <linearGradient id="gBez" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f49"/><stop offset="0.5" stop-color="#1b1d22"/><stop offset="1" stop-color="#42474f"/></linearGradient>
+              <linearGradient id="gBez2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b7079"/><stop offset="1" stop-color="#23262c"/></linearGradient>
+              <linearGradient id="gArc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16a34a"/><stop offset="0.42" stop-color="#facc15"/><stop offset="0.7" stop-color="#ff7a18"/><stop offset="1" stop-color="#e0242e"/></linearGradient>
+              <linearGradient id="gNeedle" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1d6"/><stop offset="0.5" stop-color="#ff9a3c"/><stop offset="1" stop-color="#e0242e"/></linearGradient>
+              <radialGradient id="gHub" cx="0.5" cy="0.4" r="0.6"><stop offset="0" stop-color="#fff"/><stop offset="0.4" stop-color="#cfd3da"/><stop offset="1" stop-color="#54585f"/></radialGradient>
+            </defs>
+            <circle cx="170" cy="158" r="120" fill="url(#gBez2)"/>
+            <circle cx="170" cy="158" r="112" fill="url(#gBez)"/>
+            <circle cx="170" cy="158" r="104" fill="url(#gDial)" stroke="#0a0b0e" stroke-width="2"/>
+            <path d="M 88 226 A 100 100 0 1 1 252 226" fill="none" stroke="url(#gArc)" stroke-width="13" stroke-linecap="round"/>
+            <g stroke="#e6e8ea" stroke-width="2.5"><line x1="88" y1="226" x2="102" y2="214"/><line x1="170" y1="56" x2="170" y2="74"/><line x1="252" y1="226" x2="238" y2="214"/></g>
+            <g font-family="Anton, sans-serif" font-size="10" text-anchor="middle" letter-spacing="0.5">
+              <text x="92" y="208" fill="#34d058">COMMON</text>
+              <text x="124" y="128" fill="#9fe05a">UNCOM</text>
+              <text x="170" y="92" fill="#facc15">RARE</text>
+              <text x="216" y="128" fill="#ff7a18">HOT</text>
+              <text x="248" y="208" fill="#ff4d4d">GRAIL</text>
+            </g>
+            <rect x="128" y="128" width="84" height="30" rx="6" fill="#070809" stroke="#2a2e37" stroke-width="1.5"/>
+            <text x="170" y="149" font-family="Anton, sans-serif" font-size="16" fill="#ff7a18" text-anchor="middle" letter-spacing="2">RARITY</text>
+            <g class="gauge-needle">
+              <polygon points="170,158 163,148 170,62 177,148" fill="url(#gNeedle)"/>
+              <circle cx="170" cy="66" r="4" fill="#fff" opacity="0.9"/>
+              <line x1="170" y1="158" x2="170" y2="182" stroke="#9a1f24" stroke-width="6" stroke-linecap="round"/>
+            </g>
+            <circle cx="170" cy="158" r="16" fill="url(#gHub)" stroke="#1b1d22" stroke-width="2.5"/>
+            <circle cx="170" cy="158" r="5" fill="#15171c"/>
+          </svg>
+        </div>
+        <div class="center-gauge">
+          <svg viewBox="0 0 340 232" width="100%">
+            <defs>
+              <linearGradient id="vArc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a9bdc"/><stop offset="0.5" stop-color="#9fe05a"/><stop offset="0.8" stop-color="#facc15"/><stop offset="1" stop-color="#ff6a00"/></linearGradient>
+            </defs>
+            <circle cx="170" cy="158" r="120" fill="url(#gBez2)"/>
+            <circle cx="170" cy="158" r="112" fill="url(#gBez)"/>
+            <circle cx="170" cy="158" r="104" fill="url(#gDial)" stroke="#0a0b0e" stroke-width="2"/>
+            <path d="M 88 226 A 100 100 0 1 1 252 226" fill="none" stroke="url(#vArc)" stroke-width="13" stroke-linecap="round"/>
+            <g stroke="#e6e8ea" stroke-width="2.5"><line x1="88" y1="226" x2="102" y2="214"/><line x1="170" y1="56" x2="170" y2="74"/><line x1="252" y1="226" x2="238" y2="214"/></g>
+            <g font-family="Anton, sans-serif" font-size="10" text-anchor="middle" letter-spacing="0.5" fill="#9aa0a8">
+              <text x="92" y="208">$10</text>
+              <text x="124" y="128">$50</text>
+              <text x="170" y="92">$250</text>
+              <text x="216" y="128">$1K</text>
+              <text x="250" y="208" fill="#ff8c2b">$5K+</text>
+            </g>
+            <rect x="128" y="128" width="84" height="30" rx="6" fill="#070809" stroke="#2a2e37" stroke-width="1.5"/>
+            <text x="170" y="149" font-family="Anton, sans-serif" font-size="16" fill="#3a9bdc" text-anchor="middle" letter-spacing="2">VALUE</text>
+            <g class="gauge-needle gauge-needle-2">
+              <polygon points="170,158 163,148 170,62 177,148" fill="url(#gNeedle)"/>
+              <circle cx="170" cy="66" r="4" fill="#fff" opacity="0.9"/>
+              <line x1="170" y1="158" x2="170" y2="182" stroke="#9a1f24" stroke-width="6" stroke-linecap="round"/>
+            </g>
+            <circle cx="170" cy="158" r="16" fill="url(#gHub)" stroke="#1b1d22" stroke-width="2.5"/>
+            <circle cx="170" cy="158" r="5" fill="#15171c"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="gearbox">
+        <div class="gb-label"><span>6-SPEED · DROP THE HAMMER</span><span class="gb-gear" id="gearTick">NEUTRAL</span></div>
+        <div class="shifter">
+          <svg viewBox="0 0 360 132" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="shPlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#23262d"/><stop offset="1" stop-color="#121419"/></linearGradient>
+              <radialGradient id="shBall" cx="0.4" cy="0.32" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="0.3" stop-color="#e0e3e8"/><stop offset="0.7" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></radialGradient>
+              <linearGradient id="shStick" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#54585f"/><stop offset="0.5" stop-color="#9498a0"/><stop offset="1" stop-color="#3a3d44"/></linearGradient>
+            </defs>
+            <rect x="2" y="6" width="356" height="120" rx="14" fill="url(#shPlate)" stroke="#3a3f49" stroke-width="1.5"/>
+            <!-- gate channels: 3 columns (left=1/2, mid=3/4, right=5/6) + center spine -->
+            <g stroke="#0a0b0e" stroke-width="22" stroke-linecap="round" fill="none">
+              <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
+            </g>
+            <g stroke="#16181d" stroke-width="13" stroke-linecap="round" fill="none">
+              <line x1="120" y1="34" x2="120" y2="98"/><line x1="180" y1="34" x2="180" y2="98"/><line x1="240" y1="34" x2="240" y2="98"/><line x1="120" y1="66" x2="240" y2="66"/>
+            </g>
+            <!-- clickable hit zones for each gear -->
+            <g class="gear-hit" fill="transparent" style="cursor:pointer">
+              <circle data-gear="1" cx="120" cy="34" r="20"/>
+              <circle data-gear="2" cx="120" cy="98" r="20"/>
+              <circle data-gear="3" cx="180" cy="34" r="20"/>
+              <circle data-gear="4" cx="180" cy="98" r="20"/>
+              <circle data-gear="5" cx="240" cy="34" r="20"/>
+              <circle data-gear="6" cx="240" cy="98" r="20"/>
+              <circle data-gear="0" cx="180" cy="66" r="16"/>
+            </g>
+            <g font-family="Anton, sans-serif" font-size="15" fill="#9aa0a8" text-anchor="middle" pointer-events="none">
+              <text x="120" y="28">1</text><text x="120" y="118">2</text>
+              <text x="180" y="28">3</text><text x="180" y="120">4</text>
+              <text x="240" y="28">5</text><text x="240" y="118">6</text>
+            </g>
+            <text x="180" y="66" font-family="Anton" font-size="11" fill="#ff7a18" text-anchor="middle" dominant-baseline="middle" pointer-events="none">N</text>
+            <g class="shift-stick" id="shiftStick" pointer-events="none">
+              <line class="shift-rod" id="shiftRod" x1="180" y1="66" x2="180" y2="66" stroke="url(#shStick)" stroke-width="12" stroke-linecap="round"/>
+              <circle class="shift-ball" id="shiftBall" cx="180" cy="66" r="21" fill="url(#shBall)" stroke="#1b1d22" stroke-width="1.5"/>
+              <ellipse class="shift-glint" id="shiftGlint" cx="172" cy="58" rx="7" ry="4" fill="#fff" opacity="0.5"/>
+            </g>
+          </svg>
+        </div>
+        <p class="gb-hint">Click a gear to rev the wheels ↑</p>
+      </div>
+      </div>
+
+      <div class="switches">
+        <h4>Modules</h4>
+        <div class="swrow">
+          <div class="swlabel">Live eBay Feed<small>Active listings</small></div>
+          <div class="toggle on" id="togLive" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">Sold Comps<small>Recent sales</small></div>
+          <div class="toggle on" id="togSold" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">Price Alerts <span class="tag-soon">SOON</span><small>Email me drops</small></div>
+          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">AI Identify <span class="tag-soon">SOON</span><small>Photo scan</small></div>
+          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
+        </div>
+        <div class="sys-status">
+          <div class="ss-row"><span class="ss-lbl">eBay API</span><span class="ss-val ok">● CONNECTED</span></div>
+          <div class="ss-row"><span class="ss-lbl">Data feed</span><span class="ss-val ok">● LIVE</span></div>
+          <div class="ss-row"><span class="ss-lbl">Last sync</span><span class="ss-val" id="ssSync">just now</span></div>
+          <div class="ss-row"><span class="ss-lbl">Source</span><span class="ss-val">eBay Browse + Sold</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="readouts">
+      <div class="ro-panel">
+        <div class="ro-head"><span class="ro-dot live"></span>RECENT SOLD</div>
+        <div class="ticker" id="soldTicker">
+          <div class="tick-row"><span class="tk-name">Beach Bomb Redline</span><span class="tk-price up">$2,400</span></div>
+          <div class="tick-row"><span class="tk-name">Custom Camaro '68</span><span class="tk-price up">$310</span></div>
+          <div class="tick-row"><span class="tk-name">Olds 442 STH</span><span class="tk-price">$1,150</span></div>
+          <div class="tick-row"><span class="tk-name">Red Baron</span><span class="tk-price up">$48</span></div>
+          <div class="tick-row"><span class="tk-name">Splittin' Image</span><span class="tk-price">$72</span></div>
+        </div>
+      </div>
+      <div class="ro-panel">
+        <div class="ro-head"><span class="ro-dot"></span>TOP MOVERS · 7D</div>
+        <div class="movers">
+          <div class="mv-row"><span class="mv-rank">1</span><span class="mv-name">Boss Hoss</span><span class="mv-chg up">▲ 18%</span></div>
+          <div class="mv-row"><span class="mv-rank">2</span><span class="mv-name">Beatnik Bandit</span><span class="mv-chg up">▲ 12%</span></div>
+          <div class="mv-row"><span class="mv-rank">3</span><span class="mv-name">Python</span><span class="mv-chg up">▲ 9%</span></div>
+          <div class="mv-row"><span class="mv-rank">4</span><span class="mv-name">Twin Mill</span><span class="mv-chg down">▼ 4%</span></div>
+        </div>
+      </div>
+      <div class="ro-panel">
+        <div class="ro-head"><span class="ro-dot"></span>MARKET STATS</div>
+        <div class="stats">
+          <div class="st-row"><span class="st-lbl">Castings tracked</span><span class="st-val" id="stTracked">1,200+</span></div>
+          <div class="st-row"><span class="st-lbl">Avg Redline</span><span class="st-val">$95</span></div>
+          <div class="st-row"><span class="st-lbl">Top sale 30d</span><span class="st-val o">$6,800</span></div>
+          <div class="st-row"><span class="st-lbl">Live listings</span><span class="st-val" id="stLive">2,847</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="readout-label">&gt; ENTER CASTING TO SCAN MARKET</div>
+    <div class="searchrow">
+      <input id="searchInput" type="text" placeholder="e.g. Redline Custom Camaro 1968" />
+      <button class="btn" id="searchBtn">Check Value</button>
+    </div>
+    <p class="hint">Try a casting + year, or add <b>Redline</b>, <b>Treasure Hunt</b>, or <b>STH</b> for tighter results. Not sure what you have? Use the <a href="#identify" style="color:var(--orange)">identify guide</a> below.</p>
+    <div class="spinner" id="spinner"></div>
+    <div class="result" id="result">
+      <div class="rcard">
+        <div class="rhead">
+          <div class="name" id="rName">—</div>
+          <div class="sub" id="rSub">MARKET</div>
+        </div>
+        <div class="rbody">
+          <div class="prices" id="rPrices">
+            <div class="pcell"><div class="lbl">Low</div><div class="val" id="rLow">—</div></div>
+            <div class="pcell"><div class="lbl">Avg Listing</div><div class="val o" id="rAvg">—</div></div>
+            <div class="pcell"><div class="lbl">High</div><div class="val" id="rHigh">—</div></div>
+          </div>
+          <p class="source-note" id="rNote"></p>
+          <div class="comp-btns">
+            <a class="sold" id="rSold" data-mod="sold" href="#" target="_blank" rel="noopener">View Sold Comps</a>
+            <a class="active" id="rActive" data-mod="live" href="#" target="_blank" rel="noopener">All Listings</a>
+          </div>
+          <div class="listings" id="rListings" data-mod="live"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<section class="block" id="hot">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <h2 style="margin-bottom:0;">Hot Castings <em>Right Now</em></h2>
+    <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+  </div>
+  <p class="lead" style="margin-top:10px;">Vintage Redlines and key Treasure Hunts, re-ranked live by market activity. <span id="hotStamp" style="color:var(--muted);"></span></p>
+  <div class="divider"></div>
+  <div class="spinner" id="hotSpinner" style="display:none;"></div>
+  <div class="hot-grid" id="hotGrid">
+    <div class="hot-card seed"><div class="info"><div class="nm">VW Beach Bomb (Rear-Loader)</div><div class="rng"><b>$2,400</b> – $9,050</div><div class="cnt">6 listed</div><div class="links"><a class="sold" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+beach+bomb&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">Sold</a> <a class="act" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+beach+bomb" target="_blank" rel="noopener">Listings</a></div></div></div>
+    <div class="hot-card seed"><div class="info"><div class="nm">Custom Camaro 1968</div><div class="rng"><b>$180</b> – $1,200</div><div class="cnt">23 listed</div><div class="links"><a class="sold" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+custom+camaro&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">Sold</a> <a class="act" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+custom+camaro" target="_blank" rel="noopener">Listings</a></div></div></div>
+    <div class="hot-card seed"><div class="info"><div class="nm">Olds 442</div><div class="rng"><b>$600</b> – $3,400</div><div class="cnt">9 listed</div><div class="links"><a class="sold" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+olds+442&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">Sold</a> <a class="act" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+olds+442" target="_blank" rel="noopener">Listings</a></div></div></div>
+    <div class="hot-card seed"><div class="info"><div class="nm">Splittin' Image</div><div class="rng"><b>$45</b> – $260</div><div class="cnt">38 listed</div><div class="links"><a class="sold" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+splittin+image&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">Sold</a> <a class="act" href="https://www.ebay.com/sch/i.html?_nkw=hot+wheels+redline+splittin+image" target="_blank" rel="noopener">Listings</a></div></div></div>
+  </div>
+</section>
+
+<section class="block" id="redlines">
+  <h2>Vintage <em style="color:var(--redline);text-shadow:0 0 24px rgba(224,36,36,.45);">Redlines</em> (1968–1977)</h2>
+  <p class="lead">The originals. The first decade of Hot Wheels, named for the red stripe on the tires. These are the holy grail of diecast collecting — and the most faked.</p>
+  <div class="divider red"></div>
+  <div class="info-grid">
+    <div class="info-card a-red">
+      <span class="tag">Redline Era</span>
+      <h3>What Makes A Redline</h3>
+      <p>Hot Wheels cars made from 1968 to 1977 with the signature red line painted around the tire wall. After 1977, Mattel dropped the red stripe to cut costs.</p>
+      <ul>
+        <li>Red stripe on the wheel — the defining mark</li>
+        <li>Spectraflame paint (candy finish over polished metal)</li>
+        <li>Made in USA or Hong Kong base stamps</li>
+        <li>Riveted metal bases, not modern plastic</li>
+      </ul>
+    </div>
+    <div class="info-card a-pink">
+      <span class="tag pink">Grails</span>
+      <h3>The Big Money Castings</h3>
+      <p>A handful of Redlines drive the high end of the market. Condition and color are everything — the rarer the Spectraflame shade, the higher the price.</p>
+      <ul>
+        <li>Pink is the rarest color across most castings</li>
+        <li>Custom Camaro (1968) — the first car ever made</li>
+        <li>Beach Bomb "rear-loader" — the famous prototype grail</li>
+        <li>Olds 442, Boss Hoss, Python, Beatnik Bandit</li>
+      </ul>
+      <a class="cta-mini" href="#identify">How to verify yours →</a>
+    </div>
+    <div class="info-card a-blue">
+      <span class="tag blue">Value Drivers</span>
+      <h3>What Sets The Price</h3>
+      <p>Two identical-looking Redlines can be worth $30 or $3,000. The difference lives in the details collectors check first.</p>
+      <ul>
+        <li>Color — pink and certain blues command huge premiums</li>
+        <li>Country of origin — Hong Kong vs USA bases differ in value</li>
+        <li>Wheel type and interior color variations</li>
+        <li>Condition: paint chips, tampo wear, toning all matter</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="treasure">
+  <h2>Treasure Hunts <em style="color:var(--lime);text-shadow:0 0 24px rgba(158,240,26,.4);">&amp; Super TH</em></h2>
+  <p class="lead">Starting in 1995, Mattel began hiding rare chase cars in regular cases. Finding one on a peg is the modern collector's lottery ticket.</p>
+  <div class="divider lime"></div>
+  <div class="info-grid">
+    <div class="info-card a-lime">
+      <span class="tag th">Since 1995</span>
+      <h3>Regular Treasure Hunt</h3>
+      <p>The "TH" — a limited chase casting seeded into normal mainline cases. Earlier years (1995–1999) had tiny production runs and are the most valuable.</p>
+      <ul>
+        <li>Look for the circle-flame "TH" logo on the card or car</li>
+        <li>Vintage 1995–96 THs are the premium years</li>
+        <li>Often special wheels or paint vs the standard release</li>
+        <li>Still produced today — newer ones are common</li>
+      </ul>
+    </div>
+    <div class="info-card a-purple">
+      <span class="tag sth">The Chase</span>
+      <h3>Super Treasure Hunt</h3>
+      <p>Introduced in 2007, the "STH" is the rarer, premium version — Spectraflame paint and Real Rider rubber tires. Far scarcer than a regular TH.</p>
+      <ul>
+        <li>Spectraflame (shiny metallic candy) paint</li>
+        <li>Real Rider rubber tires, not plastic</li>
+        <li>A small circle-flame "TH" symbol hidden on the car</li>
+        <li>Roughly 1 in 1,000+ cars — a genuine pull</li>
+      </ul>
+      <a class="cta-mini" href="#identify">Spot a Super vs regular →</a>
+    </div>
+    <div class="info-card a-teal">
+      <span class="tag th" style="background:var(--teal);color:#022f2a;">Buy Smart</span>
+      <h3>TH vs STH At A Glance</h3>
+      <p>The fastest tells in hand: tires and paint. Get those two right and you'll rarely be fooled.</p>
+      <ul>
+        <li>Rubber tires + shiny paint = Super TH</li>
+        <li>Plastic wheels + flat paint = regular TH</li>
+        <li>Both carry the circle-flame logo somewhere</li>
+        <li>Check the base year — early = valuable</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="identify">
+  <h2>How To <em style="color:var(--blue);text-shadow:0 0 24px rgba(30,167,255,.4);">Identify</em> A Hot Wheels</h2>
+  <p class="lead">Before you buy or sell, run through these. The difference between a $2 reissue and a $400 grail is in the base stamp and the wheels.</p>
+  <div class="divider blue"></div>
+  <div class="steps">
+    <div class="step">
+      <h4>Check The Wheels</h4>
+      <p>Red stripe = Redline (1968–77). Rubber Real Riders + shiny paint = Super Treasure Hunt. Plain plastic = mainline.</p>
+    </div>
+    <div class="step">
+      <h4>Read The Base</h4>
+      <p>Flip it. The metal base stamps the casting name, the year of the casting (not the car), and country: USA, Hong Kong, Malaysia, etc.</p>
+    </div>
+    <div class="step">
+      <h4>Find The TH Logo</h4>
+      <p>Look for the small circle-flame "TH" symbol on the car body or base. Its presence marks a Treasure Hunt or Super.</p>
+    </div>
+    <div class="step">
+      <h4>Judge The Paint</h4>
+      <p>Spectraflame is candy-bright over polished metal. Flat enamel is the standard finish. Spectraflame signals Redline-era or Super TH.</p>
+    </div>
+    <div class="step">
+      <h4>Note The Color</h4>
+      <p>On Redlines, color is king — pink is rarest, certain blues and greens command big premiums over common reds and oranges.</p>
+    </div>
+    <div class="step">
+      <h4>Grade Condition</h4>
+      <p>Paint chips, tampo wear, wheel toning, and whether it's carded all swing value hard. Mint-on-card beats loose every time.</p>
+    </div>
+  </div>
+  <p class="lead" style="margin-top:28px;">Got it identified? <a href="#" onclick="document.getElementById('searchInput').scrollIntoView({behavior:'smooth'});document.getElementById('searchInput').focus();return false;" style="color:var(--orange)">Run it through the value lookup →</a></p>
+</section>
+
+<section class="block">
+  <div class="mattel">
+    <div class="mtext">
+      <h3>New Drops From <em>Mattel Creations</em></h3>
+      <p>Vintage is the chase — but the next grail starts as a new release. Shop RLC exclusives, Elite 64, and limited drops straight from Mattel.</p>
+      <p class="tagline">Buy new at retail before it hits the secondary market.</p>
+    </div>
+    <a class="mbtn soon" id="mattelBtn" href="#" rel="noopener">Affiliate Pending</a>
+  </div>
+</section>
+
+<section class="block">
+  <h2>The Gauge <em style="color:var(--purple);text-shadow:0 0 24px rgba(157,78,221,.4);">Family</em></h2>
+  <div class="divider purple"></div>
+  <div class="family-grid">
+    <div class="fam">
+      <div class="fn">CARD<b>GAUGE</b></div>
+      <p>Sports and Pokémon cards. Scan any card and get the same instant market read.</p>
+      <a href="https://cardgauge.com" target="_blank" rel="noopener">Scan A Card →</a>
+    </div>
+    <div class="fam">
+      <div class="fn">COMIC<span class="b2">GAUGE</span></div>
+      <p>Redlines aren't the only keys. Look up any comic's market and sold comps.</p>
+      <a href="https://comicgauge.com" target="_blank" rel="noopener" style="background:#3a9bdc;">Check A Comic →</a>
+    </div>
+    <div class="fam">
+      <div class="fn">WORTH<span class="b3">GAUGE</span></div>
+      <p>Track and value your whole collection in one place — built for insurance and records.</p>
+      <a href="https://worthgauge.com" target="_blank" rel="noopener" style="background:#e0a92e;">Track It →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>HotWheelsGauge shows live eBay listings and links to completed-sale comps. Not financial advice; values fluctuate. Hot Wheels, Treasure Hunt, Redline, and related marks are property of Mattel; references are editorial. Part of the Gauge family — <a href="https://cardgauge.com" target="_blank" rel="noopener">CardGauge</a>, <a href="https://comicgauge.com" target="_blank" rel="noopener">ComicGauge</a>, <a href="https://worthgauge.com" target="_blank" rel="noopener">WorthGauge</a>.</p>
+</footer>
+
+<script>
+  const API = window.location.origin;
+  const spinner = document.getElementById('spinner'), result = document.getElementById('result');
+  function fmt(v){ return v == null ? '—' : '$' + Number(v).toLocaleString(undefined,{maximumFractionDigits:0}); }
+  function renderResult(d){
+    document.getElementById('rName').textContent = d.query || 'Result';
+    document.getElementById('rSub').textContent = d.listingCount ? (d.listingCount + ' LIVE') : 'MARKET';
+    document.getElementById('rLow').textContent = fmt(d.lowPrice);
+    document.getElementById('rAvg').textContent = fmt(d.avgPrice);
+    document.getElementById('rHigh').textContent = fmt(d.highPrice);
+    document.getElementById('rNote').textContent = d.note || '';
+    document.getElementById('rSold').href = d.soldCompsUrl || '#';
+    document.getElementById('rActive').href = d.activeListingsUrl || '#';
+    const wrap = document.getElementById('rListings'); wrap.innerHTML = '';
+    (d.listings || []).forEach(l => {
+      const a = document.createElement('a');
+      a.className='listing'; a.href=l.url; a.target='_blank'; a.rel='noopener';
+      a.innerHTML = '<img src="'+(l.image||'')+'" alt=""><div class="p"><div class="lp">'+fmt(l.price)+'</div>'+(l.condition||'')+'</div>';
+      wrap.appendChild(a);
+    });
+    result.style.display='block';
+  }
+  async function runSearch(q){
+    if(!q) return;
+    result.style.display='none'; spinner.style.display='block';
+    try{
+      const r = await fetch(API + '/api/market?q=' + encodeURIComponent(q));
+      const d = await r.json();
+      if(d.success) renderResult(d); else alert(d.error || 'No results. Try a casting name plus year.');
+    }catch(e){ alert('Lookup failed. Try again.'); }
+    spinner.style.display='none';
+  }
+  document.getElementById('searchBtn').addEventListener('click', () => runSearch(document.getElementById('searchInput').value.trim()));
+  document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') runSearch(e.target.value.trim()); });
+
+  // Dashboard module toggles — filter which parts of a result show
+  const modState = { live:true, sold:true };
+  function applyModules(){
+    document.querySelectorAll('[data-mod="live"]').forEach(el=>{ el.style.display = modState.live ? '' : 'none'; });
+    document.querySelectorAll('[data-mod="sold"]').forEach(el=>{ el.style.display = modState.sold ? '' : 'none'; });
+  }
+  function bindToggle(id, key){
+    const t = document.getElementById(id);
+    if(!t) return;
+    const flip = () => {
+      modState[key] = !modState[key];
+      t.classList.toggle('on', modState[key]);
+      t.setAttribute('aria-checked', modState[key]);
+      applyModules();
+    };
+    t.addEventListener('click', flip);
+    t.addEventListener('keydown', e => { if(e.key===' '||e.key==='Enter'){ e.preventDefault(); flip(); } });
+  }
+  bindToggle('togLive','live');
+  bindToggle('togSold','sold');
+  // re-apply after each search render
+  const _origRender = renderResult;
+  renderResult = function(d){ _origRender(d); applyModules(); };
+
+  // Animate the recent-sold ticker (continuous vertical scroll)
+  (function(){
+    const tk = document.getElementById('soldTicker');
+    if(!tk) return;
+    // wrap existing rows in a moving track
+    const track = document.createElement('div');
+    while(tk.firstChild) track.appendChild(tk.firstChild);
+    Array.from(track.children).forEach(r => track.appendChild(r.cloneNode(true)));
+    tk.appendChild(track);
+    let y = 0;
+    setInterval(() => {
+      y -= 0.4;
+      const first = track.children[0];
+      const h = first.offsetHeight + 1;
+      if(Math.abs(y) >= h){ track.appendChild(first); y += h; }
+      track.style.transform = 'translateY(' + y + 'px)';
+    }, 30);
+  })();
+
+  // Interactive 6-speed shifter — clicking a gear revs the HOT WHEELS headline wheels
+  (function(){
+    const stick = document.getElementById('shiftStick');
+    const rod = document.getElementById('shiftRod');
+    const ball = document.getElementById('shiftBall');
+    const glint = document.getElementById('shiftGlint');
+    const gearLabel = document.getElementById('gearTick');
+    if(!stick) return;
+    // gate coordinates per gear (ball target in SVG units)
+    const pos = {
+      0:{x:180,y:66, name:'NEUTRAL', speed:'0s'},   // neutral = stopped
+      1:{x:120,y:34, name:'GEAR 1', speed:'3.2s'},
+      2:{x:120,y:98, name:'GEAR 2', speed:'2.4s'},
+      3:{x:180,y:34, name:'GEAR 3', speed:'1.7s'},
+      4:{x:180,y:98, name:'GEAR 4', speed:'1.2s'},
+      5:{x:240,y:34, name:'GEAR 5', speed:'0.8s'},
+      6:{x:240,y:98, name:'GEAR 6', speed:'0.45s'}
+    };
+    const wheels = document.querySelectorAll('.wheelO');
+    function setGear(g){
+      const p = pos[g]; if(!p) return;
+      // move stick: rod from neutral pivot to ball, ball + glint to target
+      rod.setAttribute('x2', p.x); rod.setAttribute('y2', p.y);
+      ball.setAttribute('cx', p.x); ball.setAttribute('cy', p.y);
+      glint.setAttribute('cx', p.x-8); glint.setAttribute('cy', p.y-8);
+      gearLabel.textContent = p.name;
+      // drive wheels
+      wheels.forEach(w => {
+        if(p.speed === '0s'){ w.style.animationPlayState='paused'; }
+        else { w.style.animationPlayState='running'; w.style.setProperty('--wheel-speed', p.speed); }
+      });
+    }
+    document.querySelectorAll('.gear-hit circle').forEach(c => {
+      c.addEventListener('click', () => setGear(parseInt(c.dataset.gear,10)));
+    });
+    // start in neutral (wheels idle until user shifts)
+    setGear(0);
+  })();
+
+  // Feed live-listings stat from the hot board
+  function updateLiveStat(items){
+    const el = document.getElementById('stLive');
+    if(!el || !items) return;
+    const total = items.reduce((s,it)=> s + (it.listingCount||0), 0);
+    if(total>0) el.textContent = total.toLocaleString();
+  }
+  let lastHotFetch = 0;
+  function stampAgo(){
+    const el = document.getElementById('hotStamp');
+    const ss = document.getElementById('ssSync');
+    if(!lastHotFetch) return;
+    const s = Math.round((Date.now()-lastHotFetch)/1000);
+    const txt = s < 5 ? 'just now' : s + 's ago';
+    if(el) el.textContent = s < 5 ? 'Updated just now' : 'Updated ' + s + 's ago';
+    if(ss) ss.textContent = txt;
+  }
+  async function loadHot(){
+    try{
+      const r = await fetch(API + '/api/hot');
+      const d = await r.json();
+      const grid = document.getElementById('hotGrid');
+      document.getElementById('hotSpinner').style.display='none';
+      if(!d.items || !d.items.length) return; // keep seed cards if nothing real yet
+      grid.innerHTML='';
+      (d.items||[]).forEach(it => {
+        const range = (it.lowPrice!=null && it.highPrice!=null) ? '<b>'+fmt(it.lowPrice)+'</b> – '+fmt(it.highPrice) : 'No live listings';
+        const div = document.createElement('div'); div.className='hot-card';
+        div.innerHTML = '<img src="'+(it.image||'')+'" alt=""><div class="info"><div class="nm">'+it.title+'</div><div class="rng">'+range+'</div><div class="cnt">'+(it.listingCount||0)+' listed</div><div class="links"><a class="sold" href="'+it.soldCompsUrl+'" target="_blank" rel="noopener">Sold</a> <a class="act" href="'+it.listingsUrl+'" target="_blank" rel="noopener">Listings</a></div></div>';
+        grid.appendChild(div);
+      });
+      lastHotFetch = Date.now();
+      stampAgo();
+      updateLiveStat(d.items);
+    }catch(e){
+      document.getElementById('hotSpinner').style.display='none';
+      // keep seed cards visible on failure (offline/local preview)
+    }
+  }
+  loadHot();
+  setInterval(loadHot, 60000);
+  setInterval(stampAgo, 1000);
+</script>
+</body>
+</html>
