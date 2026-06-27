@@ -23,7 +23,7 @@
   .anton{font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:.5px;}
 
   header{background:var(--black);border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:60;}
-  .nav{max-width:1150px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .nav{max-width:1480px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
   .logo{font-family:'Racing Sans One',cursive;font-size:30px;color:var(--chrome);line-height:1;letter-spacing:.5px;}
   .logo b{color:var(--orange);}
   .nav-links{display:flex;gap:20px;font-family:'Anton',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;}
@@ -32,8 +32,8 @@
   @media(max-width:760px){.nav-links{display:none;}}
 
   /* ── HERO with animated track ── */
-  .hero{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#1b1e26 0%,#0d0f14 55%,#08090c 100%);padding:54px 20px 8px;}
-  .hero-inner{max-width:1150px;margin:0 auto;position:relative;z-index:3;}
+  .hero{position:relative;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#1b1e26 0%,#0d0f14 55%,#08090c 100%);padding:22px 20px 0;}
+  .hero-inner{max-width:1480px;margin:0 auto;position:relative;z-index:3;}
   .gauge-flames{position:absolute;left:0;right:0;bottom:-6%;height:78%;z-index:0;pointer-events:none;opacity:.55;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 30%,#000 100%);}
   .gauge-flames svg{width:100%;height:100%;}
   .gauge-flames .fl{transform-origin:center bottom;}
@@ -82,16 +82,25 @@
   }
 
   /* ===== Car dashboard ===== */
-  .tool{max-width:1150px;margin:8px auto 0;padding:0 20px 50px;position:relative;z-index:5;}
-  .dash{position:relative;background:linear-gradient(180deg,#1c1f26 0%,#13151b 60%,#0d0e13 100%);border:2px solid #2a2e37;border-radius:24px;padding:24px 24px 28px;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.04),0 0 50px rgba(255,106,0,.06);}
+  .tool{max-width:1480px;margin:-10px auto 0;padding:0 20px 50px;position:relative;z-index:5;}
+  .dash{position:relative;background:linear-gradient(180deg,#1c1f26 0%,#13151b 60%,#0d0e13 100%);border:2px solid #2a2e37;border-radius:24px;padding:26px 30px 32px;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.04),0 0 50px rgba(255,106,0,.06);}
   .dash::before{content:"";position:absolute;inset:0;border-radius:24px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0 2px,transparent 2px 4px);pointer-events:none;}
-  .dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap;position:relative;}
+  .dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;position:relative;}
+
+  /* windshield header — headline lives inside the dashboard */
+  .windshield{position:relative;border:2px solid #23262d;border-radius:18px;background:radial-gradient(130% 120% at 50% 0%,#1a1e26 0%,#101218 60%,#0b0c10 100%);padding:30px 28px 26px;margin-bottom:18px;overflow:hidden;box-shadow:inset 0 3px 14px rgba(0,0,0,.5);}
+  .windshield .kicker{margin-bottom:8px;}
+  .windshield .hero-head{position:relative;z-index:2;}
+  .windshield .sub{font-size:18px;max-width:620px;margin:14px 0 0;color:#d6d2c6;position:relative;z-index:2;text-shadow:0 1px 10px rgba(8,9,12,.9);}
   .dbadge{display:flex;align-items:center;gap:10px;font-family:'Anton',sans-serif;letter-spacing:2px;color:#cfd3da;font-size:15px;}
   .dbadge .ddot{width:10px;height:10px;border-radius:50%;background:#34d058;box-shadow:0 0 10px #34d058;animation:dpulse 1.8s infinite;}
   .dbadge .dgo{color:var(--orange);}
   @keyframes dpulse{0%,100%{opacity:1;}50%{opacity:.4;}}
   .dash-id{font-family:'Archivo',monospace;color:#5a5f68;font-size:12px;letter-spacing:1px;}
-  .cluster{display:grid;grid-template-columns:2.4fr 1fr;gap:18px;align-items:stretch;}
+  .dash-head-row{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:stretch;margin-bottom:18px;}
+  .dash-head-row .windshield{margin-bottom:0;}
+  .dash-head-row .switches{margin:0;}
+  .cluster{display:block;}
   .twin-gauges{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;}
   .switches{display:flex;flex-direction:column;}
   .sys-status{margin-top:auto;padding-top:16px;border-top:1px solid #1f222a;}
@@ -99,7 +108,7 @@
   .ss-lbl{color:#7a7f88;}
   .ss-val{color:#cfd3da;letter-spacing:.5px;}
   .ss-val.ok{color:#34d058;}
-  .gauge-col{display:flex;flex-direction:column;gap:14px;justify-content:space-between;}
+  .gauge-col{display:flex;flex-direction:column;gap:16px;justify-content:flex-start;}
 
   /* gearbox now a 2-part panel: shifter + live drive readout fills the gap */
   .gearbox{background:#0c0d11;border:2px solid #23262d;border-radius:14px;padding:14px 16px 12px;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
@@ -145,6 +154,9 @@
   .toggle.soon{opacity:.45;cursor:not-allowed;}
   .tag-soon{font-family:'Archivo',monospace;font-size:9px;color:#ff6a00;border:1px solid #ff6a00;border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;letter-spacing:.5px;}
   .readout-label{font-family:'Archivo',monospace;font-size:12px;color:#5a5f68;letter-spacing:1px;margin:22px 0 8px;position:relative;}
+  .readouts.two{grid-template-columns:1fr 1fr;}
+  .sw-stats{margin-top:16px;padding-top:16px;border-top:1px solid #1f222a;}
+  .sw-stats .ro-head{margin-bottom:10px;}
   .searchrow{display:flex;gap:14px;flex-wrap:wrap;position:relative;}
   .searchrow input{flex:1;min-width:240px;background:#0b0c10;border:2px solid var(--steel);border-radius:11px;padding:20px 22px;font-size:19px;color:var(--chrome);font-family:'Archivo',sans-serif;font-weight:600;transition:.12s;box-shadow:inset 0 3px 12px rgba(0,0,0,.6);}
   .searchrow input::placeholder{color:#6c6c74;}
@@ -303,13 +315,6 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <div class="kicker">Vintage Redline Market Intel</div>
-    <h1 class="hero-head">
-      <span class="hl1">WHAT'S YOUR</span>
-      <span class="hl2"><span class="hw">H</span><svg class="wheelO" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg><span class="hw">T</span><span class="hgap"></span><span class="hw">WHEELS</span></span>
-      <span class="hl3">W<svg class="wheelO sm" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg>RTH?</span>
-    </h1>
-    <p class="sub">Look up any casting and see the live market — built for vintage Redlines, Treasure Hunts, and Super Treasure Hunts.</p>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
       <radialGradient id="hwTire" cx="0.5" cy="0.42" r="0.62"><stop offset="0.5" stop-color="#1a1c22"/><stop offset="0.86" stop-color="#0a0b0e"/><stop offset="1" stop-color="#000"/></radialGradient>
       <radialGradient id="hwHub" cx="0.42" cy="0.36" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="0.4" stop-color="#c9cdd4"/><stop offset="0.75" stop-color="#80858d"/><stop offset="1" stop-color="#4a4e55"/></radialGradient>
@@ -337,6 +342,58 @@
     <div class="dash-top">
       <div class="dbadge"><span class="ddot"></span>HOTWHEELS<span class="dgo">GAUGE</span> · MARKET DASH</div>
       <div class="dash-id">SYS.v1 // LIVE FEED</div>
+    </div>
+
+    <div class="dash-head-row">
+    <div class="windshield">
+      <div class="kicker">Vintage Redline Market Intel</div>
+      <h1 class="hero-head">
+        <span class="hl1">WHAT'S YOUR</span>
+        <span class="hl2"><span class="hw">H</span><svg class="wheelO" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg><span class="hw">T</span><span class="hgap"></span><span class="hw">WHEELS</span></span>
+        <span class="hl3">W<svg class="wheelO sm" viewBox="0 0 96 96" aria-hidden="true"><use href="#hwWheel"/></svg>RTH?</span>
+      </h1>
+      <p class="sub">Look up any casting and see the live market — built for vintage Redlines, Treasure Hunts, and Super Treasure Hunts.</p>
+      <div class="readout-label" style="margin-top:20px;">&gt; ENTER CASTING TO SCAN MARKET</div>
+      <div class="searchrow">
+        <input id="searchInput" type="text" placeholder="e.g. Redline Custom Camaro 1968" />
+        <button class="btn" id="searchBtn">Check Value</button>
+      </div>
+    </div>
+
+      <div class="switches">
+        <h4>Modules</h4>
+        <div class="swrow">
+          <div class="swlabel">Live eBay Feed<small>Active listings</small></div>
+          <div class="toggle on" id="togLive" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">Sold Comps<small>Recent sales</small></div>
+          <div class="toggle on" id="togSold" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">Price Alerts <span class="tag-soon">SOON</span><small>Email me drops</small></div>
+          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
+        </div>
+        <div class="swrow">
+          <div class="swlabel">AI Identify <span class="tag-soon">SOON</span><small>Photo scan</small></div>
+          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
+        </div>
+        <div class="sys-status">
+          <div class="ss-row"><span class="ss-lbl">eBay API</span><span class="ss-val ok">● CONNECTED</span></div>
+          <div class="ss-row"><span class="ss-lbl">Data feed</span><span class="ss-val ok">● LIVE</span></div>
+          <div class="ss-row"><span class="ss-lbl">Last sync</span><span class="ss-val" id="ssSync">just now</span></div>
+          <div class="ss-row"><span class="ss-lbl">Source</span><span class="ss-val">eBay Browse + Sold</span></div>
+        </div>
+        <div class="sw-stats">
+          <div class="ro-head"><span class="ro-dot"></span>MARKET STATS</div>
+          <div class="stats">
+            <div class="st-row"><span class="st-lbl">Castings tracked</span><span class="st-val" id="stTracked">1,200+</span></div>
+            <div class="st-row"><span class="st-lbl">Avg Redline</span><span class="st-val">$95</span></div>
+            <div class="st-row"><span class="st-lbl">Top sale 30d</span><span class="st-val o">$6,800</span></div>
+            <div class="st-row"><span class="st-lbl">Live listings</span><span class="st-val" id="stLive">2,847</span></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="cluster">
@@ -465,35 +522,9 @@
         <p class="gb-hint">Click a gear to rev the wheels ↑</p>
       </div>
       </div>
-
-      <div class="switches">
-        <h4>Modules</h4>
-        <div class="swrow">
-          <div class="swlabel">Live eBay Feed<small>Active listings</small></div>
-          <div class="toggle on" id="togLive" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
-        </div>
-        <div class="swrow">
-          <div class="swlabel">Sold Comps<small>Recent sales</small></div>
-          <div class="toggle on" id="togSold" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div>
-        </div>
-        <div class="swrow">
-          <div class="swlabel">Price Alerts <span class="tag-soon">SOON</span><small>Email me drops</small></div>
-          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
-        </div>
-        <div class="swrow">
-          <div class="swlabel">AI Identify <span class="tag-soon">SOON</span><small>Photo scan</small></div>
-          <div class="toggle soon" aria-disabled="true"><div class="knob"></div></div>
-        </div>
-        <div class="sys-status">
-          <div class="ss-row"><span class="ss-lbl">eBay API</span><span class="ss-val ok">● CONNECTED</span></div>
-          <div class="ss-row"><span class="ss-lbl">Data feed</span><span class="ss-val ok">● LIVE</span></div>
-          <div class="ss-row"><span class="ss-lbl">Last sync</span><span class="ss-val" id="ssSync">just now</span></div>
-          <div class="ss-row"><span class="ss-lbl">Source</span><span class="ss-val">eBay Browse + Sold</span></div>
-        </div>
-      </div>
     </div>
 
-    <div class="readouts">
+    <div class="readouts two">
       <div class="ro-panel">
         <div class="ro-head"><span class="ro-dot live"></span>RECENT SOLD</div>
         <div class="ticker" id="soldTicker">
@@ -513,22 +544,8 @@
           <div class="mv-row"><span class="mv-rank">4</span><span class="mv-name">Twin Mill</span><span class="mv-chg down">▼ 4%</span></div>
         </div>
       </div>
-      <div class="ro-panel">
-        <div class="ro-head"><span class="ro-dot"></span>MARKET STATS</div>
-        <div class="stats">
-          <div class="st-row"><span class="st-lbl">Castings tracked</span><span class="st-val" id="stTracked">1,200+</span></div>
-          <div class="st-row"><span class="st-lbl">Avg Redline</span><span class="st-val">$95</span></div>
-          <div class="st-row"><span class="st-lbl">Top sale 30d</span><span class="st-val o">$6,800</span></div>
-          <div class="st-row"><span class="st-lbl">Live listings</span><span class="st-val" id="stLive">2,847</span></div>
-        </div>
-      </div>
     </div>
 
-    <div class="readout-label">&gt; ENTER CASTING TO SCAN MARKET</div>
-    <div class="searchrow">
-      <input id="searchInput" type="text" placeholder="e.g. Redline Custom Camaro 1968" />
-      <button class="btn" id="searchBtn">Check Value</button>
-    </div>
     <p class="hint">Try a casting + year, or add <b>Redline</b>, <b>Treasure Hunt</b>, or <b>STH</b> for tighter results. Not sure what you have? Use the <a href="#identify" style="color:var(--orange)">identify guide</a> below.</p>
     <div class="spinner" id="spinner"></div>
     <div class="result" id="result">
